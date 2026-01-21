@@ -6,6 +6,15 @@ on:
       versionName:
         description: "Release version (e.g. 1.0.0)"
         required: true
+      buildTarget:
+        description: "Build target"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - both
+          - playstore
+          - github
 
 permissions:
   contents: write
@@ -54,8 +63,13 @@ jobs:
           base64 -d app/google-services.json.base64 > app/google-services.json
           rm app/google-services.json.base64
 
-      # 6️⃣ Build signed release
-      - name: Build Release
+      - name: Create local.properties
+        run: |
+          echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" > $GITHUB_WORKSPACE/local.properties
+
+      # 6️⃣ Build signed AAB for Play Store
+      - name: Build AAB (Play Store)
+        if: github.event.inputs.buildTarget == 'playstore' || github.event.inputs.buildTarget == 'both'
         run: |
           chmod +x gradlew
           ./gradlew bundleRelease \
@@ -66,12 +80,63 @@ jobs:
             -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} \
             -PKEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
-      # 7️⃣ GitHub Release
+      # 7️⃣ Build signed split APKs for GitHub
+      - name: Build Split APKs (GitHub)
+        if: github.event.inputs.buildTarget == 'github' || github.event.inputs.buildTarget == 'both'
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease \
+            -PVERSION_CODE=$VERSION_CODE \
+            -PVERSION_NAME=$VERSION_NAME \
+            -PSTORE_FILE=release-key.jks \
+            -PSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+            -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} \
+            -PKEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      # 8️⃣ Rename APKs for clarity
+      - name: Rename APK files
+        if: github.event.inputs.buildTarget == 'github' || github.event.inputs.buildTarget == 'both'
+        run: |
+          cd app/build/outputs/apk/release
+          for file in *.apk; do
+            if [ -f "$file" ]; then
+              newname=$(echo "$file" | sed "s/app-/fitnessapp-v${{ env.VERSION_NAME }}-/")
+              mv "$file" "$newname"
+              echo "Renamed: $file -> $newname"
+            fi
+          done
+
+      # 9️⃣ List generated files (for debugging)
+      - name: List generated files
+        run: |
+          echo "=== APK Files ==="
+          ls -lh app/build/outputs/apk/release/ || echo "No APKs found"
+          echo "=== AAB Files ==="
+          ls -lh app/build/outputs/bundle/release/ || echo "No AABs found"
+
+      # 🔟 GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION_NAME }}
-          name: v${{ env.VERSION_NAME }}
-          files: app/build/outputs/bundle/release/app-release.aab
+          name: Release v${{ env.VERSION_NAME }}
+          body: |
+            ## Release v${{ env.VERSION_NAME }}
+            
+            **Version Code:** ${{ env.VERSION_CODE }}
+            **Build Target:** ${{ github.event.inputs.buildTarget }}
+            
+            ### Downloads
+            Choose the APK that matches your device architecture for optimal size, or use the universal APK if unsure.
+            
+            - **arm64-v8a**: Modern 64-bit ARM devices (most common)
+            - **armeabi-v7a**: Older 32-bit ARM devices
+            - **universal**: Works on all devices (larger file size)
+          files: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

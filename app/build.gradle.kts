@@ -65,6 +65,15 @@ android {
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: "dummy_key_for_testing"
     }
 
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = true // This creates a universal APK as well
+        }
+    }
+
     signingConfigs {
         if (hasCiSigning) {
             create("release") {
