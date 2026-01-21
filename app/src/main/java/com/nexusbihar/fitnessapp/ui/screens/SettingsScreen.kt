@@ -15,6 +15,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.nexusbihar.fitnessapp.ui.theme.*
 import com.nexusbihar.fitnessapp.ui.viewmodel.HealthViewModel
 import com.nexusbihar.fitnessapp.ui.viewmodel.ThemeViewModel
+import com.nexusbihar.fitnessapp.BuildConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -267,12 +268,12 @@ fun SettingsScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Smart Health Tracker",
+                        text = "Healthify",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Version 1.0.0",
+                        text = "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

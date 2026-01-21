@@ -50,7 +50,7 @@ fun PermissionsScreen(
 
         item {
             Text(
-                text = "Smart Health Tracker needs certain permissions to provide you with the best health tracking experience.",
+                text = "Healthify needs certain permissions to provide you with the best health tracking experience.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

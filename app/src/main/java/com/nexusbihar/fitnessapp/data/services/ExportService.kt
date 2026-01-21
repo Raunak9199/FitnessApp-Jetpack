@@ -31,7 +31,7 @@ class ExportService(private val context: Context) {
 
     suspend fun exportToCSV(healthData: List<HealthData>): String = withContext(Dispatchers.IO) {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val fileName = "SmartHealthTracker_Data_$timestamp.csv"
+        val fileName = "HealthifyFitness_Data_$timestamp.csv"
         val file = getDownloadsFile(fileName)
 
         FileWriter(file).use { writer ->
@@ -59,7 +59,7 @@ class ExportService(private val context: Context) {
 
     suspend fun exportToPDF(healthData: List<HealthData>): String = withContext(Dispatchers.IO) {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val fileName = "FitnessApp_Report_$timestamp.pdf"
+        val fileName = "HealthifyFitness_Report_$timestamp.pdf"
         val file = getDownloadsFile(fileName)
 
         // Create PDF using iText
@@ -69,7 +69,7 @@ class ExportService(private val context: Context) {
             val document = Document(pdfDocument)
 
             // Title
-            val title = Paragraph("FITNESS APP - HEALTH REPORT")
+            val title = Paragraph("Healthify Fitness Tracker - HEALTH REPORT")
                 .setTextAlignment(TextAlignment.CENTER)
                 .setFontSize(18f)
             document.add(title)

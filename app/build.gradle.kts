@@ -37,9 +37,10 @@ val hasLocalSigning = keystorePropertiesFile.exists()
 
 android {
     namespace = "com.nexusbihar.fitnessapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
+//    compileSdk {
+//        version = release(36)
+//    }
 
     defaultConfig {
         applicationId = "com.nexusbihar.fitnessapp"
@@ -106,6 +107,7 @@ android {
 //    }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions{

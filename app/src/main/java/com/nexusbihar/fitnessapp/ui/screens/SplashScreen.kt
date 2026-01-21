@@ -123,7 +123,7 @@ fun SplashScreen(
 
             // App Name with Animation
             Text(
-                text = "Advanced Fitness App",
+                text = "Healthify Fitness Tracker",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = HealthBlue,

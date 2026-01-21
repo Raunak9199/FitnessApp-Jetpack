@@ -133,7 +133,7 @@ fun AuthScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Text(
-                        text = "Advanced Fitness App",
+                        text = "Healthify Fitness Tracker",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                         color = HealthBlue,

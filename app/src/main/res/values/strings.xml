@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fitness App</string>
+    <string name="app_name">Healthify</string>
     <string name="dashboard">Dashboard</string>
     <string name="water_tracking">Water Tracking</string>
     <string name="step_tracking">Step Tracking</string>
@@ -27,7 +27,7 @@
     <string name="close">Close</string>
     <string name="back">Back</string>
     <string name="error">Error</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="google_fit_connected">Google Fit Connected</string>
     <string name="google_fit_not_connected">Google Fit Not Connected</string>
     <string name="connect_google_fit">Connect Google Fit for automatic step tracking</string>
