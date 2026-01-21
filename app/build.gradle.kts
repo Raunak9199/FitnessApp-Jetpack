@@ -20,6 +20,21 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(keystorePropertiesFile.inputStream())
 }
 
+val ciStoreFile = project.findProperty("STORE_FILE") as String?
+val ciStorePassword = project.findProperty("STORE_PASSWORD") as String?
+val ciKeyAlias = project.findProperty("KEY_ALIAS") as String?
+val ciKeyPassword = project.findProperty("KEY_PASSWORD") as String?
+
+val hasCiSigning = listOf(
+    ciStoreFile,
+    ciStorePassword,
+    ciKeyAlias,
+    ciKeyPassword
+).all { it != null }
+
+val hasLocalSigning = keystorePropertiesFile.exists()
+
+
 android {
     namespace = "com.nexusbihar.fitnessapp"
     compileSdk {
@@ -50,11 +65,20 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = rootProject.file(keystoreProperties["storeFile"]!!)
-            storePassword = keystoreProperties["storePassword"] as String
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
+        if (hasCiSigning) {
+            create("release") {
+                storeFile = rootProject.file(ciStoreFile!!)
+                storePassword = ciStorePassword
+                keyAlias = ciKeyAlias
+                keyPassword = ciKeyPassword
+            }
+        } else if (hasLocalSigning) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties["storeFile"]!!)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
         }
     }
 
@@ -62,7 +86,10 @@ android {
         release {
             isMinifyEnabled = false
             isShrinkResources = false
-            signingConfig = signingConfigs.getByName("release")
+
+            if (hasCiSigning || hasLocalSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
